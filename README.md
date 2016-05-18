@@ -1,7 +1,9 @@
 Parser JSON to XML made in LEX
 ======
 **Description :** This project is made to parse a specific JSON file into the XML conresponding
+
 The specific JSON is describe by the **JSON_schema.json**
+
 The XML is describe with the doctype file **DTD.xml**
 
 
@@ -36,6 +38,7 @@ $ ./newline Parseur_JSON_to_XML
 
 ##Run the application :
 with the trace.json (the selected file we use)
+
 **output on the command line**
 ```
 $ ./Parseur_JSON_to_XML < trace.json
