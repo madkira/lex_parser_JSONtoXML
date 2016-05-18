@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<LISTE>
+  <MESSAGE METHODE="initialize|takeDecision" TIME=123456789 PART="Engine|Explorer">
+
+  </MESSAGE>
+</LISTE>

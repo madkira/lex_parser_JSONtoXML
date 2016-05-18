@@ -1,0 +1,20 @@
+#!/usr/bin/zsh
+echo "NEWLEX: version 2009"
+# extension avec "basename" pour run non local
+
+function usage  {
+echo >&2 golex: $1
+echo
+echo >&2 "La procedure n'a pas marché, veuillez corriger et la relancer SVP"
+exit 1
+}
+
+#test de l'existence des fichiers
+test -f $1.lex || usage "ERREUR: Je ne trouve pas le fichier $1.lex"
+
+
+echo "compilation par lex ....." $1.lex " --lex--> lex.yy.c"
+lex $1.lex
+
+echo "compilation par gcc .....  lex.yy.c  --gcc--> " `basename $1`
+gcc lex.yy.c -ll -o`basename $1`

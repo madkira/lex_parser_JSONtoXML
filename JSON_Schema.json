@@ -1,0 +1,200 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["time", "meth", "part", "data"],
+    "properties": {
+      "data": {
+        "type": "object",
+        "oneOf": [
+          {"$ref": "#/definitions/initial"},
+          {"$ref": "#/definitions/explorer"},
+          {"$ref": "#/definitions/engine"}
+        ]
+      }
+    },
+    "part": {"enum": [ "explorer", "engine" ]},
+    "time": {
+      "type": "number",
+      "minimum": 0
+    },
+    "meth": {"enum": ["initialize", "takeDecision"]}
+  },
+  "definitions": {
+    "initial": {
+      "properties": {
+        "heading": { "$ref": "#/definitions/cardinal" },
+        "men": {
+          "type": "number",
+          "minimum": 2
+        },
+        "contracts": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "amount": {
+              "type": "number",
+              "minimum": 1
+            },
+            "resource":{
+              "oneOf": [
+                {"$ref": "#/definitions/primary_resource"},
+                {"$ref": "#/definitions/manufactured_resources"}
+              ]
+            }
+          },
+          "required": ["amount", "resource"]
+        },
+        "budget": {"type": "number"}
+      },
+      "required": ["heading", "men", "contracts", "budget"]
+    },
+    "engine": {
+      "properties": {
+        "cost": {
+          "type": "number",
+          "minimum": 0
+        },
+        "extras": {
+          "range": {"type": "number"},
+          "found": {"enum": ["GROUND", "OUT_OF_RANGE"]},
+          "creeks" : {
+            "type": "array",
+            "items" : {
+              "type": "string"
+            }
+          },
+          "biomes": {
+            "type": "array",
+            "items" : {
+              "$ref": "#/definitions/biomes"
+            }
+          },
+          "altitude": {"type": "number"},
+          "asked_range": {"type": "number"},
+          "report":{
+            "type": "array",
+            "items": {
+              "required": [],
+              "properties": {
+                "0":{
+                  "type": "array",
+                  "items": {
+                    "required": [],
+                    "type": "array",
+                    "items": {
+                      "required": [],
+                      "properties": {
+                        "0": {"$ref": "#/definitions/biomes"},
+                        "1": {"type": "number"}
+                      }
+                    }
+                  }
+                },
+                "1":{
+                  "type": "array",
+                  "items": {
+                    "required": [],
+                    "type": "array",
+                    "items": {
+                      "required": [],
+                      "properties": {
+                        "0": {"$ref": "#/definitions/biomes"},
+                        "1": {"type": "number"}
+                      }
+                    }
+                  }
+                },
+                "2": {
+                  "type": "array",
+                  "items": {"enum": "#/definitions/biomes"}
+                },
+                "3": {
+                  "type": "array",
+                  "items": {"enum": "#/definitions/biomes"}
+                }
+              }
+            }
+          },
+          "resources": {
+            "type": "array",   "items": {
+              "oneOf": [
+                {"$ref": "#/definitions/primary_resource"},
+                {
+                  "type": "object",
+                  "parameters": {
+                    "amount": {"enum": ["HIGH", "MEDIUM", "LOW"]},
+                    "resource": {"$ref": "#/definitions/primary_resource"},
+                    "cond": {"enum": ["HARSH", "MEDIUM", "FAIR"]}
+                  }
+                }
+              ]
+            }
+          },
+          "pois": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "amount": {"type": "number"},
+          "production": {"type": "number"},
+          "kind": {"$ref": "#/definitions/manufactured_resources"}
+        },
+        "status": {"type": "string"}
+      },
+      "required": ["cost", "extras", "status"]
+    },
+    "explorer": {
+      "properties": {
+        "action": {"enum": ["fly", "heading", "echo", "scan", "stop", "land", "move_to", "scout", "glimpse", "explore", "exploit", "transform"]},
+        "parameters": {
+          "direction": {"$ref": "%/definitions/cardinal"},
+          "creek": {
+            "type": "string",
+            "minLength": 1
+          },
+          "people": {
+            "type": "number",
+            "minimum": 1
+          },
+          "range": {
+            "type": "number",
+            "minimum": 1
+          },
+          "resource": {"$ref": "#/definitions/primary_resource"},
+          "QUARTZ": {
+            "type": "number",
+            "minimum":1
+          },
+          "WOOD": {
+            "type": "number",
+            "minimum":1
+          },
+          "ORE": {
+            "type": "number",
+            "minimum":1
+          },
+          "FUR": {
+            "type": "number",
+            "minimum":1
+          },
+          "SUGAR_CANE": {
+            "type": "number",
+            "minimum":1
+          },
+          "FRUITS": {
+            "type": "number",
+            "minimum":1
+          }
+        }
+      },
+      "required": ["action"]
+    },
+    "cardinal": {"enum": ["N", "S", "E", "W"]},
+    "primary_resource": {"enum": ["FISH", "FLOWER", "FRUITS", "FUR", "OR", "QUARTZ", "SUGAR_CANE", "WOOD"]},
+    "manufactured_resources": {"enum": ["GLASS", "INGOT", "LEATHER", "PLANK", "RUM"]},
+    "biomes": {"enum": ["OCEAN", "LAKE", "BEACH", "GRASSLAND", "MANGROVE", "TROPICAL_RAIN_FOREST","TROPICAL_SEASONAL_FOREST", "TEMPERATE_DECIDUOUS_FOREST", "TEMPERATE_RAIN_FOREST", "TEMPERATE_DESERT", "TAIGA", "SNOW", "TUNDRA", "ALPINE", "GLACIER", "SHRUBLAND", "SUB_TROPICAL_DESERT"]}
+  }
+}
