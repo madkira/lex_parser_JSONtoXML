@@ -7,21 +7,23 @@ The XML is describe with the doctype file **DTD.xml**
 
 ##Required :
 **gcc**
+
 debian :
 ```
 $ sudo apt-get install gcc
 ```
-**archlinux**
+archlinux :
 ```
 $ pacman -S gcc
 ```
 
 **lex**
+
 debian :
 ```
 $ sudo apt-get install flex
 ```
-**archlinux**
+archlinux :
 ```
 $ pacman -S flex
 ```
