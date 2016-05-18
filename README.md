@@ -45,4 +45,5 @@ $ ./Parseur_JSON_to_XML < trace.json > generated.xml
 
 ##Contributors :
 Raphaël KUMAR
+
 Günther JUNGBLUTH
