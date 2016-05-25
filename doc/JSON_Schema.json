@@ -4,15 +4,13 @@
   "items": {
     "type": "object",
     "required": ["time", "meth", "part", "data"],
-    "properties": {
-      "data": {
-        "type": "object",
-        "oneOf": [
-          {"$ref": "#/definitions/initial"},
-          {"$ref": "#/definitions/explorer"},
-          {"$ref": "#/definitions/engine"}
-        ]
-      }
+    "data": {
+      "type": "object",
+      "oneOf": [
+        {"$ref": "#/definitions/initial"},
+        {"$ref": "#/definitions/explorer"},
+        {"$ref": "#/definitions/engine"}
+      ]
     },
     "part": {"enum": [ "explorer", "engine" ]},
     "time": {
