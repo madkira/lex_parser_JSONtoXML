@@ -5,6 +5,8 @@
 /*
 #define MAXHEIGHT 5
 #define MAXWIDTH 50
+#define TRUE 1
+#define FALSE 0
 
 int position;
 char **balises;
@@ -56,6 +58,33 @@ unsigned char *realloc_properly (unsigned char *ptr){
 }
 
 
+char *write_open_balise(char *text, const char *name, int newline, int nb_tab){
+  char *open;
+  open = text;
+  if(newline == 1)
+    open = strcat(open, "\n");
+  int i;
+  for(i = 0; i < nb_tab; i++)
+    open = strcat(open, "\t");
+  open = strcat(open, "<");
+  open = strcat(open, name);
+  open = strcat(open, ">");
+  return open;
+}
+
+char *write_close_balise(char *text, const char *name, int newline, int nb_tab){
+  char *close;
+  close = text;
+  if(newline == 1)
+    close = strcat(close, "\n");
+  int i;
+  for(i = 0; i < nb_tab; i++)
+    close = strcat(close, "\t");
+  close = strcat(close, "</");
+  close = strcat(close, name);
+  close = strcat(close, ">");
+  return close;
+}
 
 
 
@@ -69,14 +98,13 @@ char *line(char *text, const char *balise, const char *value, int begin, int end
   inner_text = strcat(inner_text,balise);
   inner_text = strcat(inner_text,">");
   inner_text = strncat(inner_text, yytext+begin, yyleng-end);
-  inner_text = strcat(inner_text,"</");
-  inner_text = strcat(inner_text,balise);
-  inner_text = strcat(inner_text,">");
+  inner_text = write_close_balise(inner_text, balise, 0, 0);
+
   return inner_text;
 }
 
 
-void generate_balise(char *name, int begin, int end, int type){
+void generate_balise_name(char *name, int begin, int end, int type){
   if(type == 1){
     balise  = (char*) calloc(50,sizeof(char));
     balise = strncpy(balise, name + begin, strlen(name)- end);
@@ -88,11 +116,15 @@ void generate_balise(char *name, int begin, int end, int type){
 }
 
 
+
+
+
+
 char *contract(char *text, const char *amount, int amount_size){
   char *inner_text;
   char SInt[10];
   inner_text = text;
-  inner_text = strcat(inner_text, "\n\t\t\t\t<");
+  inner_text = strcat(inner_text, "\n\t\t\t<");
   inner_text = strncat(inner_text, yytext+1, yyleng-2);
   inner_text = strcat(inner_text, ">");
   inner_text = strncat(inner_text, amount, amount_size);
@@ -225,52 +257,52 @@ UTF   (.|\n)
 
 
 
-{INLINE} {generate_balise(yytext, 1 , 3, 1); BEGIN INLINE;}
+{INLINE} {generate_balise_name(yytext, 1 , 3, 1); BEGIN INLINE;}
 
 <INLINE>{NUM} {text = line(text,balise, yytext, 0, 0, 2); BEGIN 0;}
 <INLINE>{STR} {text = line(text,balise, yytext, 1, 2, 2); BEGIN 0;}
 
 
-{CONTRACTS} {generate_balise(yytext, 1, 3, 1); text = strcat(text, "\n\t\t<"); text = strcat(text, balise);  text = strcat(text, ">"); BEGIN CONTRACTS;}
+{CONTRACTS} {generate_balise_name(yytext, 1, 3, 1); text = write_open_balise(text, balise, 1, 2); BEGIN CONTRACTS;}
 
 <CONTRACTS>{RESOURCE} {;}
 <CONTRACTS>{AMOUNT} {;}
 <CONTRACTS>{NUM} {amount = yytext; amount_size = yyleng;}
 <CONTRACTS>{STR} {contract(text, amount, amount_size);}
-<CONTRACTS>"]," {text = strcat(text, "\n\t\t</"); text = strcat(text, balise);  text = strcat(text, ">"); BEGIN 0;}
+<CONTRACTS>"]," {text = write_close_balise(text, balise, 1, 2); BEGIN 0;}
 
-{EXTPARA} {generate_balise(yytext, 1, 3, 1); text = strcat(text, "\n\t\t<"); text = strcat(text, balise); text = strcat(text, ">"); BEGIN EXTPARA;}
+{EXTPARA} {generate_balise_name(yytext, 1, 3, 1); text = write_open_balise(text, balise, 1, 2); BEGIN EXTPARA;}
 
-<EXTPARA>{LINEEXTPARA} {generate_balise(yytext, 1, 3, 2);}
+<EXTPARA>{LINEEXTPARA} {generate_balise_name(yytext, 1, 3, 2);}
 <EXTPARA>{STR} {text = line(text,inside_balise, yytext, 1, 2, 3);}
 <EXTPARA>{NUM} {text = line(text,inside_balise, yytext, 0, 0, 3);}
 
 
-<EXTPARA>^"  }," { text = strcat(text, "\n\t\t</"); text = strcat(text, balise); text = strcat(text, ">"); BEGIN 0;}
-<EXTPARA>{STATUS} { text = strcat(text, "\n\t\t</"); text = strcat(text, balise); text = strcat(text, ">"); generate_balise(yytext, 1 , 3, 1); BEGIN INLINE;}
+<EXTPARA>^"  }," { text = write_close_balise(text, balise, 1, 2); BEGIN 0;}
+<EXTPARA>{STATUS} { text = write_close_balise(text, balise, 1, 2); generate_balise_name(yytext, 1 , 3, 1); BEGIN INLINE;}
 
 
-<EXTPARA>{SIMPLEEXTARR} {generate_balise(yytext, 1, 3, 2); text = strcat(text, "\n\t\t\t<"); text = strcat(text, inside_balise); text = strcat(text, ">"); BEGIN SIMPLEEXTARR;}
+<EXTPARA>{SIMPLEEXTARR} {generate_balise_name(yytext, 1, 3, 2); text = write_open_balise(text, inside_balise, 1, 3); BEGIN SIMPLEEXTARR;}
 <SIMPLEEXTARR>{STR} {inner = (char*) calloc(50,sizeof(char)); inner = strncat(inner, inside_balise, strlen(inside_balise)-1); text = line(text, inner, yytext, 1, 2, 4);}
-<SIMPLEEXTARR>"]" {text = strcat(text, "\n\t\t\t</"); text = strcat(text, inside_balise); text = strcat(text, ">"); BEGIN EXTPARA;}
+<SIMPLEEXTARR>"]" {text = write_close_balise(text, inside_balise, 1, 3); BEGIN EXTPARA;}
 
 
-<EXTPARA>{RESOURCES} {generate_balise(yytext, 1, 3, 2); text = strcat(text, "\n\t\t\t<"); text = strcat(text, inside_balise); text = strcat(text, ">"); BEGIN RESOURCES;}
-<RESOURCES>"{" {inner = (char*) calloc(50,sizeof(char)); inner = strncat(inner, inside_balise, strlen(inside_balise)-1); text = strcat(text, "\n\t\t\t\t<"); text = strcat(text, inner); text = strcat(text, ">");}
+<EXTPARA>{RESOURCES} {generate_balise_name(yytext, 1, 3, 2); text = write_open_balise(text, inside_balise, 1, 3); BEGIN RESOURCES;}
+<RESOURCES>"{" {inner = (char*) calloc(50,sizeof(char)); inner = strncat(inner, inside_balise, strlen(inside_balise)-1); text = write_open_balise(text, inner, 1, 4);}
 <RESOURCES>{DATARESOURCES}  {inner = (char*) calloc(50,sizeof(char)); inner = strncat(inner, yytext+1, yyleng-3);}
 <RESOURCES>{STR} {text = line(text, inner, yytext, 1, 2, 5);}
 <RESOURCES>"}" {inner = (char*) calloc(50,sizeof(char)); inner = strncat(inner, inside_balise, strlen(inside_balise)-1); text = strcat(text, "\n\t\t\t\t</"); text = strcat(text, inner); text = strcat(text, ">");}
-<RESOURCES>"]" {text = strcat(text, "\n\t\t\t</"); text = strcat(text, inside_balise); text = strcat(text, ">"); BEGIN EXTPARA;}
+<RESOURCES>"]" {text = write_close_balise(text, inside_balise, 1, 3); BEGIN EXTPARA;}
 
 
 <EXTPARA>{REPORT} {text = strcat(text, "\n\t\t\t<"); range_report = 1; report = calloc(2, sizeof(char)); sprintf(report, "%i", range_report); inner = (char*) calloc(10, sizeof(char)); inner = strncat(inner, yytext+1, yyleng - 3); text =strcat(text, inner); text = strcat(text, "s>\n\t\t\t\t<");  text =strcat(text, inner); text = strcat(text, " RANGE=\""); text = strcat(text, report); text = strcat(text, "\">"); BEGIN REPORT;}
 
-<REPORT>{STR} {if(3 >= range_report){report_biome = (char*) calloc(50,sizeof(char)); report_biome = strncat(report_biome, yytext+1, yyleng -2);} else {text = strcat(text, "\n\t\t\t\t\t<"); text = strncat(text, yytext+1, yyleng-2); text = strcat(text, "></");text = strncat(text, yytext+1, yyleng-2); text = strcat(text, ">");}}
+<REPORT>{STR} {report_biome = (char*) calloc(50,sizeof(char)); report_biome = strncat(report_biome, yytext+1, yyleng -2); if(3 < range_report){text = write_open_balise(text, report_biome, 1, 5); text = write_close_balise(text, report_biome, 1, 5);}}
 
 <REPORT>{NUM} {text = line(text, report_biome, yytext, 0, 0, 5);}
-<REPORT>^"        ["  {if(1 != range_report){text = strcat(text, "\n\t\t\t\t</");  text =strcat(text, inner); text = strcat(text, ">"); text = strcat(text, "\n\t\t\t\t<");  text =strcat(text, inner); text = strcat(text, " RANGE=\""); text = strcat(text, report); text = strcat(text, "\">");} range_report++; sprintf(report, "%i", range_report);}
+<REPORT>^"        ["  {if(1 != range_report){text = write_close_balise(text, inner, 1, 4); text = strcat(text, "\n\t\t\t\t<");  text =strcat(text, inner); text = strcat(text, " RANGE=\""); text = strcat(text, report); text = strcat(text, "\">");} range_report++; sprintf(report, "%i", range_report);}
 
-<REPORT>^"      ]" {text = strcat(text, "\n\t\t\t\t</");  text =strcat(text, inner); text = strcat(text, ">"); text = strcat(text, "\n\t\t\t</"); text =strcat(text, inner); text = strcat(text, ">"); BEGIN EXTPARA;}
+<REPORT>^"      ]" {text = write_close_balise(text, inner, 1, 4); text = strcat(text, "\n\t\t\t</"); text =strcat(text, inner); text = strcat(text, ">"); BEGIN EXTPARA;}
 
 
 {UTF}   ;
@@ -279,7 +311,6 @@ UTF   (.|\n)
 
 int main(void) {
   printf("<?xml version=\"1.0\"?>\n<LISTE>");
-//  init();
   yylex();
   printf("\n</LISTE>\n");
   return 0;
