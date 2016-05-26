@@ -5,7 +5,7 @@ echo "NEWLEX: version 2009"
 function usage  {
 echo >&2 golex: $1
 echo
-echo >&2 "La procedure n'a pas marchÈ, veuillez corriger et la relancer SVP"
+echo >&2 "La procedure n'a pas march√©, veuillez corriger et la relancer SVP"
 exit 1
 }
 
