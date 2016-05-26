@@ -1,6 +1,47 @@
-<?xml version="1.0"?>
-<LISTE>
-  <MESSAGE METHODE="initialize|takeDecision" TIME=123456789 PART="Engine|Explorer">
-
-  </MESSAGE>
-</LISTE>
+<!DOCTYPE LISTE [
+        <!ELEMENT LISTE (MESSAGE)*>
+        <!ELEMENT MESSAGE (heading|men|contracts|budget|action|parameters|cost|extras|status)*>
+        <!ATTLIST MESSAGE
+                METH CDATA #REQUIRED
+                PART CDATA #REQUIRED
+                TIME CDATA #REQUIRED>
+        <!ELEMENT heading (#PCDATA)>
+        <!ELEMENT men (#PCDATA)>
+        <!ELEMENT contracts (GLASS|LEATHER|WOOD)*>
+        <!ELEMENT GLASS (#PCDATA)>
+        <!ELEMENT LEATHER (#PCDATA)>
+        <!ELEMENT WOOD (#PCDATA)>
+        <!ELEMENT budget (#PCDATA)>
+        <!ELEMENT action (#PCDATA)>
+        <!ELEMENT parameters (direction|creek|people|range|resource|FUR)*>
+        <!ELEMENT direction (#PCDATA)>
+        <!ELEMENT cost (#PCDATA)>
+        <!ELEMENT extras (found|range|creeks|biomes|asked_range|reports|resources|pois|amount|production|kind)*>
+        <!ELEMENT found (#PCDATA)>
+        <!ELEMENT range (#PCDATA)>
+        <!ELEMENT status (#PCDATA)>
+        <!ELEMENT creeks (creek)*>
+        <!ELEMENT biomes (biome)*>
+        <!ELEMENT biome (#PCDATA)>
+        <!ELEMENT creek (#PCDATA)>
+        <!ELEMENT people (#PCDATA)>
+        <!ELEMENT asked_range (#PCDATA)>
+        <!ELEMENT reports (report)*>
+        <!ELEMENT report (GRASSLAND|OCEAN|BEACH|TEMPERATE_DECIDUOUS_FOREST|TAIGA|TUNDRA)*>
+        <!ATTLIST report
+                RANGE CDATA #REQUIRED>
+        <!ELEMENT GRASSLAND (#PCDATA)>
+        <!ELEMENT resources (resource)*>
+        <!ELEMENT resource (amount|resource|cond)*>
+        <!ELEMENT amount (#PCDATA)>
+        <!ELEMENT cond (#PCDATA)>
+        <!ELEMENT pois (#PCDATA)>
+        <!ELEMENT OCEAN (#PCDATA)>
+        <!ELEMENT BEACH (#PCDATA)>
+        <!ELEMENT TEMPERATE_DECIDUOUS_FOREST (#PCDATA)>
+        <!ELEMENT TAIGA (#PCDATA)>
+        <!ELEMENT TUNDRA (#PCDATA)>
+        <!ELEMENT FUR (#PCDATA)>
+        <!ELEMENT production (#PCDATA)>
+        <!ELEMENT kind (#PCDATA)>
+]>
